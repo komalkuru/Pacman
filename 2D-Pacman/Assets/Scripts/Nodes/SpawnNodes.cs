@@ -2,8 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Create a game board.
+/// </summary>
+
 public class SpawnNodes : MonoBehaviour
-{
+{ 
     // how many times our node will spawn
     int numToSpawn = 28;
 
@@ -15,8 +19,10 @@ public class SpawnNodes : MonoBehaviour
 
     void Start()
     {
+        // To reaname the game object name
         gameObject.name = "Node";
         return;
+
         if(gameObject.name == "Node")
         {
             currentSpawnOffset = spawnOffset;
@@ -27,11 +33,5 @@ public class SpawnNodes : MonoBehaviour
                 currentSpawnOffset += spawnOffset;
             }
         }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }

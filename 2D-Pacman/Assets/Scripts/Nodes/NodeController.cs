@@ -29,7 +29,13 @@ public class NodeController : MonoBehaviour
     [Tooltip("Store downward adjacent node of current node.")]
     public GameObject nodeDown;
 
-    private void Start()
+    [Tooltip("Wrap the player right to left.")]
+    public bool isWrapRightNode = false;
+
+    [Tooltip("Wrap the player left to right.")]
+    public bool isWrapLeftNode = false;
+
+    private void Awake()
     {
         //This is goig to send out the line up, down, left and right and it's goind to grab every sing thing that is touches.
         //To hits multiple things

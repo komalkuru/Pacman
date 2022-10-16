@@ -29,8 +29,32 @@ public class NodeController : MonoBehaviour
     [Tooltip("Store downward adjacent node of current node.")]
     public GameObject nodeDown;
 
-    private void Start()
+    [Tooltip("Wrap the player right to left.")]
+    public bool isWrapRightNode = false;
+
+    [Tooltip("Wrap the player left to right.")]
+    public bool isWrapLeftNode = false;
+
+    // If the node contains a pellet when the game strats
+    public bool isPelletNode = false;
+    //If the node still has a pellet
+    public bool hasPellet = false;
+
+    public bool isGhostAtStartingNode = false;
+
+    public SpriteRenderer pelletSprite;
+    public GameManager gameManager;
+
+    private void Awake()
     {
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        if(transform.childCount > 0)
+        {
+            isPelletNode = true;
+            hasPellet = true;
+            pelletSprite = GetComponentInChildren<SpriteRenderer>();
+        }
+
         //This is goig to send out the line up, down, left and right and it's goind to grab every sing thing that is touches.
         //To hits multiple things
         RaycastHit2D[] hitsDown;
@@ -42,7 +66,7 @@ public class NodeController : MonoBehaviour
             // get the distance between the node which get the hit - current node (node2 - node1) 
             float distance = Mathf.Abs(hitsDown[i].point.y - transform.position.y);
 
-            if(distance < 0.3f)
+            if(distance < 0.3f && hitsDown[i].collider.tag == "Node") // we only want to connect with nodes not with a player
             {
                 canMoveDown = true;
                 nodeDown = hitsDown[i].collider.gameObject;
@@ -59,7 +83,7 @@ public class NodeController : MonoBehaviour
             // get the distance between the node which get the hit - current node (node2 - node1) 
             float distance = Mathf.Abs(hitsUp[i].point.y - transform.position.y);
 
-            if (distance < 0.3f)
+            if (distance < 0.3f && hitsUp[i].collider.tag == "Node") // we only want to connect with nodes not with a player
             {
                 canMoveUp = true;
                 nodeUp = hitsUp[i].collider.gameObject;
@@ -76,7 +100,7 @@ public class NodeController : MonoBehaviour
             // get the distance between the node which get the hit - current node (node2 - node1) 
             float distance = Mathf.Abs(hitsRight[i].point.x - transform.position.x);
 
-            if (distance < 0.3f)
+            if (distance < 0.3f && hitsRight[i].collider.tag == "Node") // we only want to connect with nodes not with a player
             {
                 canMoveRight = true;
                 nodeRight = hitsRight[i].collider.gameObject;
@@ -93,11 +117,18 @@ public class NodeController : MonoBehaviour
             // get the distance between the node which get the hit - current node (node2 - node1) 
             float distance = Mathf.Abs(hitsLeft[i].point.x - transform.position.x);
 
-            if (distance < 0.3f)
+            if (distance < 0.3f && hitsLeft[i].collider.tag == "Node") // we only want to connect with nodes not with a player
             {
                 canMoveLeft = true;
                 nodeLeft = hitsLeft[i].collider.gameObject;
             }
+        }
+
+        if(isGhostAtStartingNode)
+        {
+            Debug.Log("isGhostAtStartingNode");
+            canMoveDown = true;
+            nodeDown = gameManager.ghostNodeCenter;
         }
     }
 
@@ -121,6 +152,16 @@ public class NodeController : MonoBehaviour
         } else
         {
             return null;
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.tag == "Player" && hasPellet)
+        {
+            hasPellet = false;
+            pelletSprite.enabled = false;
+            gameManager.CollectedPellet(this);
         }
     }
 }

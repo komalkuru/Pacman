@@ -18,10 +18,10 @@ public class SpawnNodes : MonoBehaviour
     public float currentSpawnOffset;
 
     void Start()
-    {
+    {/*
         // To reaname the game object name
         gameObject.name = "Node";
-        return;
+        return;*/
 
         if(gameObject.name == "Node")
         {

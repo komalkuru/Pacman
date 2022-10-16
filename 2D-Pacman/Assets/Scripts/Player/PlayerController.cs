@@ -11,30 +11,64 @@ public class PlayerController : MonoBehaviour
 
     MovementController movementController;
 
+    public SpriteRenderer spriteRenderer;
+    public Animator animator;
+
     // Start is called before the first frame update
     void Awake()
     {
+        animator = GetComponentInChildren<Animator>();
+        spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+
         movementController = GetComponent<MovementController>();
+        movementController.lastMovingDirection = "left";
+    }
+
+    private void FixedUpdate()
+    {
+        if (Input.GetKey(KeyCode.LeftArrow))
+        {
+            movementController.SetDirection("left");
+        }
+        if (Input.GetKey(KeyCode.RightArrow))
+        {
+            movementController.SetDirection("right");
+        }
+        if (Input.GetKey(KeyCode.UpArrow))
+        {
+            movementController.SetDirection("up");
+        }
+        if (Input.GetKey(KeyCode.DownArrow))
+        {
+            movementController.SetDirection("down");
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKey(KeyCode.LeftArrow))
+        //Player will go idle state to moving state
+        animator.SetBool("Moving", true);
+
+        bool flipX = false;
+        bool flipY = false;
+        if(movementController.lastMovingDirection == "left")
         {
-            movementController.SetDirection("left");
-        } 
-        else if (Input.GetKey(KeyCode.RightArrow))
+            animator.SetInteger("direction", 0);
+        } else if (movementController.lastMovingDirection == "right")
         {
-            movementController.SetDirection("right");
-        } 
-        else if (Input.GetKey(KeyCode.UpArrow))
+            animator.SetInteger("direction", 0);
+            flipX = true;
+        } else if (movementController.lastMovingDirection == "up")
         {
-            movementController.SetDirection("up");
-        } 
-        else if (Input.GetKey(KeyCode.DownArrow))
+            animator.SetInteger("direction", 1);
+        } else if (movementController.lastMovingDirection == "down")
         {
-            movementController.SetDirection("down");
+            animator.SetInteger("direction", 1);
+            flipY = true;
         }
+        //change the direction of sprite
+        spriteRenderer.flipY = flipY;
+        spriteRenderer.flipX = flipX;
     }
 }

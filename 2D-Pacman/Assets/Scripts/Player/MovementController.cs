@@ -22,6 +22,7 @@ public class MovementController : MonoBehaviour
     public string lastMovingDirection = "";
 
     public bool canWrap = true;
+    public bool isGhost = false;
     // Start is called before the first frame update
     void Awake()
     {
@@ -30,9 +31,10 @@ public class MovementController : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {
+    {        
         NodeController currentNodeController = currentNode.GetComponent<NodeController>(); 
 
+        //Move towards it's current node
         transform.position = Vector2.MoveTowards(transform.position, currentNode.transform.position, speed * Time.deltaTime);
 
         // Reverse player movement smoothly
@@ -49,6 +51,11 @@ public class MovementController : MonoBehaviour
         //Figure out if we are at the center of our current node 
         if(transform.position.x == currentNode.transform.position.x && transform.position.y == currentNode.transform.position.y)
          {
+            if(isGhost)
+            {
+                //When player reach the center of the node before we use our direction, tell the ghost that player reach the center of the node.
+                GetComponent<EnemyController>().ReachedCenterOfTheNode(currentNodeController);
+            }
             //If we reached the center of the left wrap, wrap to the rightWrap
             if(currentNodeController.isWrapLeftNode && canWrap)
             {
@@ -72,6 +79,12 @@ public class MovementController : MonoBehaviour
             //Otherwise firnd the next node
             else
             {
+                //Id player is not a ghost that is respawning, and player are on the start node, and player trying to move down, stop.
+                if(currentNodeController.isGhostAtStartingNode && direction == "down" 
+                    && (!isGhost || GetComponent<EnemyController>().currentGhostNodeState != EnemyController.GhostNodeState.respawning))
+                {
+                    direction = lastMovingDirection;
+                }
                 //Get the next node from our node controller using our current direction.
                 GameObject newNode = currentNodeController.GetNodeFromDirection(direction);
 
